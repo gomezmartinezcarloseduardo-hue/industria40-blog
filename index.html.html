@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Industria 4.0 — Logística Inteligente | Iberoamericana</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================
+   RESET & VARIABLES
+============================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+:root {
+  --ink:       #05080F;
+  --deep:      #080C16;
+  --panel:     #0C1220;
+  --card:      #101828;
+  --line:      rgba(255,255,255,0.07);
+  --line2:     rgba(255,255,255,0.12);
+
+  --cyan:      #22D3EE;
+  --cyan-dim:  rgba(34,211,238,0.12);
+  --orange:    #FB923C;
+  --orange-dim:rgba(251,146,60,0.12);
+  --green:     #34D399;
+  --green-dim: rgba(52,211,153,0.1);
+
+  --white:     #F0F6FF;
+  --silver:    #94A3B8;
+  --fog:       #3D5068;
+
+  --syne:      'Syne', sans-serif;
+  --outfit:    'Outfit', sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 24px;
+}
+
+body {
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--outfit);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ============================
+   UTILITY
+============================ */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--line2);
+  color: var(--silver);
+}
+.tag.cyan  { border-color: rgba(34,211,238,0.35); color: var(--cyan); }
+.tag.green { border-color: rgba(52,211,153,0.35); color: var(--green); }
+.tag.orange{ border-color: rgba(251,146,60,0.35); color: var(--orange); }
+.tag::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--syne);
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+.prose {
+  color: var(--silver);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.8;
+  max-width: 68ch;
+}
+.prose strong { color: var(--white); font-weight: 600; }
+
+/* ============================
+   ANIMATED BACKGROUND CANVAS
+============================ */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* ============================
+   NAV
+============================ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(1.2rem, 4vw, 3rem);
+  height: 64px;
+  background: rgba(5,8,15,0.8);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-logo {
+  font-family: var(--syne);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-logo .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(34,211,238,0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(34,211,238,0); }
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--silver);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--cyan); }
+
+.nav-cta {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--cyan);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.nav-cta:hover { background: #67E8F9; transform: translateY(-1px); }
+
+@media (max-width:768px) {
+  .nav-links, .nav-cta { display: none; }
+}
+
+/* ============================
+   HERO
+============================ */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 64px clamp(1.2rem, 5vw, 5rem) clamp(3rem, 7vw, 6rem);
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 65% 30%, rgba(34,211,238,0.09) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 15% 80%, rgba(251,146,60,0.07) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.1s ease forwards;
+}
+.hero-badge span {
+  display: inline-block;
+  width: 32px; height: 1px;
+  background: var(--cyan);
+}
+
+.hero-title {
+  font-family: var(--syne);
+  font-weight: 800;
+  font-size: clamp(3.2rem, 10vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.2s ease forwards;
+}
+.hero-title .stroke {
+  -webkit-text-stroke: 2px var(--cyan);
+  color: transparent;
+}
+.hero-title .orange { color: var(--orange); }
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--silver);
+  font-weight: 300;
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.3s ease forwards;
+}
+
+.hero-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.4s ease forwards;
+}
+
+.hero-meta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+}
+
+.hero-meta-item { display: flex; flex-direction: column; gap: 3px; }
+.hero-meta-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fog);
+}
+.hero-meta-val {
+  font-family: var(--outfit);
+  font-size: 0.9rem;
+  color: var(--white);
+  font-weight: 500;
+}
+
+.hero-scroll {
+  position: absolute;
+  right: clamp(1.2rem, 4vw, 4rem);
+  bottom: clamp(2rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fog);
+}
+.hero-scroll-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(to bottom, var(--fog), transparent);
+  animation: scrollLine 1.8s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0%,100% { transform: scaleY(1); opacity:1; }
+  50% { transform: scaleY(0.5); opacity:0.4; }
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ============================
+   STAT BAR
+============================ */
+.stat-bar {
+  position: relative; z-index:1;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+}
+@media(max-width:640px){ .stat-bar { grid-template-columns: repeat(2,1fr); } }
+
+.stat-item {
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+  border-right: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:3px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+.stat-item:hover::before { transform: scaleX(1); }
+
+.stat-num {
+  font-family: var(--syne);
+  font-weight: 800;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1;
+  color: var(--cyan);
+  letter-spacing: -0.03em;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.stat-lbl {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fog);
+  line-height: 1.5;
+}
+
+/* ============================
+   WRAPPER
+============================ */
+.wrap {
+  position: relative; z-index:1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.2rem, 5vw, 4rem);
+}
+
+/* ============================
+   SECTION COMMONS
+============================ */
+.section { padding: clamp(4rem, 8vw, 8rem) 0; }
+.section-head {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* ============================
+   INTRO SECTION
+============================ */
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 4rem;
+  align-items: start;
+}
+@media(max-width:900px){ .intro-grid { grid-template-columns:1fr; gap:2.5rem; } }
+
+.info-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 2rem;
+  position: sticky; top: 80px;
+}
+.info-box-title {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.info-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.info-list li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.9rem; color: var(--silver); font-weight: 300; line-height: 1.5;
+}
+.info-list li::before {
+  content: '→';
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+@media(max-width:900px){ .info-box { position:static; } }
+
+/* ============================
+   TECH SECTION
+============================ */
+.tech-section {
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.tech-cards {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+}
+@media(max-width:768px){ .tech-cards { grid-template-columns:1fr; gap:2px; } }
+
+.tech-card {
+  background: var(--card);
+  padding: clamp(2rem, 4vw, 3rem);
+  position: relative; overflow: hidden;
+  transition: background 0.3s;
+}
+.tech-card:hover { background: #131e30; }
+
+.tech-card-accent {
+  position: absolute; top:0; left:0; right:0; height:3px;
+}
+.tech-card:nth-child(1) .tech-card-accent { background: linear-gradient(90deg, var(--cyan), #67E8F9); }
+.tech-card:nth-child(2) .tech-card-accent { background: linear-gradient(90deg, var(--orange), #FCD34D); }
+.tech-card:nth-child(3) .tech-card-accent { background: linear-gradient(90deg, var(--green), #6EE7B7); }
+
+.tech-card-icon {
+  width: 56px; height: 56px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+.tech-card:nth-child(1) .tech-card-icon { background: var(--cyan-dim); }
+.tech-card:nth-child(2) .tech-card-icon { background: var(--orange-dim); }
+.tech-card:nth-child(3) .tech-card-icon { background: var(--green-dim); }
+
+.tech-card-name {
+  font-family: var(--syne);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+}
+.tech-card-sub {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+.tech-card:nth-child(1) .tech-card-sub { color: var(--cyan); }
+.tech-card:nth-child(2) .tech-card-sub { color: var(--orange); }
+.tech-card:nth-child(3) .tech-card-sub { color: var(--green); }
+
+.tech-card-desc { color: var(--silver); font-size: 0.92rem; font-weight:300; line-height:1.7; }
+
+/* ============================
+   QUESTION BAND
+============================ */
+.question-band {
+  position: relative; z-index:1;
+  background: linear-gradient(135deg, #0a1628 0%, #0c1f3a 50%, #0a1628 100%);
+  border-top: 1px solid rgba(34,211,238,0.2);
+  border-bottom: 1px solid rgba(34,211,238,0.2);
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.2rem, 5vw, 4rem);
+  text-align: center;
+  overflow: hidden;
+}
+.question-band::before {
+  content:'?';
+  position:absolute;
+  font-family: var(--syne); font-weight:800;
+  font-size: min(40vw, 400px);
+  color: rgba(34,211,238,0.03);
+  right: 5%; top: 50%; transform: translateY(-50%);
+  line-height:1; pointer-events:none;
+}
+.question-band-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 2rem;
+  display: block;
+}
+.question-band-text {
+  font-family: var(--syne);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 3.5vw, 2.6rem);
+  line-height: 1.25;
+  color: var(--white);
+  max-width: 900px;
+  margin: 0 auto;
+  letter-spacing: -0.02em;
+}
+.question-band-text .hl { color: var(--cyan); }
+
+/* ============================
+   OBJECTIVES
+============================ */
+.obj-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+@media(max-width:640px){ .obj-grid { grid-template-columns:1fr; } }
+
+.obj-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.obj-card:hover { border-color: var(--line2); transform: translateY(-3px); }
+
+.obj-card.main {
+  grid-column: 1/-1;
+  background: linear-gradient(135deg, #0e1d35 0%, #0c1828 100%);
+  border-color: rgba(34,211,238,0.25);
+}
+.obj-num {
+  font-family: var(--syne); font-weight:800;
+  font-size: 4rem; line-height:1;
+  color: rgba(255,255,255,0.04);
+  position: absolute; top:1rem; right:1.5rem;
+  pointer-events:none;
+  letter-spacing:-0.04em;
+}
+.obj-tag {
+  font-family: var(--mono); font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  color: var(--cyan); margin-bottom:0.75rem; display:block;
+}
+.obj-card:nth-child(3) .obj-tag { color: var(--orange); }
+.obj-card:nth-child(4) .obj-tag { color: var(--green); }
+
+.obj-title {
+  font-family: var(--syne); font-weight:800;
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  color: var(--white); margin-bottom:0.75rem; line-height:1.15;
+  letter-spacing:-0.01em;
+}
+.obj-desc { color: var(--silver); font-size:0.92rem; font-weight:300; line-height:1.7; }
+
+/* ============================
+   HYPOTHESIS
+============================ */
+.hypo-section { background: var(--deep); }
+
+.hypo-block {
+  border-left: 4px solid var(--green);
+  background: var(--card);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  margin-bottom: 3rem;
+  position: relative;
+}
+.hypo-block::before {
+  content:'"';
+  font-family: var(--syne); font-weight:800;
+  font-size: 10rem; line-height:0.8;
+  color: rgba(52,211,153,0.06);
+  position:absolute; top:1rem; left:2rem;
+  pointer-events:none;
+}
+.hypo-text {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--white);
+  font-weight: 400; line-height:1.8;
+  position: relative; z-index:1;
+}
+.hypo-text strong { color: var(--green); }
+
+.vars-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+}
+@media(max-width:640px){ .vars-grid { grid-template-columns:1fr; } }
+
+.var-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 2rem; overflow:hidden;
+}
+.var-card.ind { border-top: 3px solid var(--cyan); }
+.var-card.dep { border-top: 3px solid var(--orange); }
+
+.var-label {
+  font-family: var(--mono); font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  margin-bottom:0.5rem; display:block;
+}
+.var-card.ind .var-label { color: var(--cyan); }
+.var-card.dep .var-label { color: var(--orange); }
+
+.var-title {
+  font-family: var(--syne); font-weight:800;
+  font-size: 1.4rem; color:var(--white);
+  margin-bottom:1.25rem; letter-spacing:-0.01em;
+}
+.var-list { list-style:none; display:flex; flex-direction:column; gap:0.6rem; }
+.var-list li {
+  font-size:0.88rem; color:var(--silver); font-weight:300;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  border-left: 2px solid var(--line2);
+  line-height:1.4;
+}
+.var-card.ind .var-list li { border-left-color: rgba(34,211,238,0.3); }
+.var-card.dep .var-list li { border-left-color: rgba(251,146,60,0.3); }
+
+/* ============================
+   METHODOLOGY
+============================ */
+.method-section { background: var(--panel); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+
+.method-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:start;
+}
+@media(max-width:768px){ .method-grid { grid-template-columns:1fr; gap:2rem; } }
+
+.method-steps { display:flex; flex-direction:column; gap:0; }
+
+.method-step {
+  display:flex; gap:1.5rem; padding:1.5rem 0;
+  border-bottom: 1px solid var(--line);
+  position:relative;
+}
+.method-step:last-child { border-bottom:none; }
+
+.step-num {
+  font-family: var(--mono); font-weight:700;
+  font-size:0.8rem; color:var(--cyan);
+  flex-shrink:0; width:28px; padding-top:3px;
+}
+.step-body {}
+.step-title {
+  font-family: var(--outfit); font-weight:600;
+  font-size:1rem; color:var(--white); margin-bottom:0.3rem;
+}
+.step-desc { font-size:0.88rem; color:var(--silver); font-weight:300; line-height:1.6; }
+
+.method-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 2rem;
+  position: sticky; top:80px;
+}
+@media(max-width:768px){ .method-box { position:static; } }
+
+.method-box-title {
+  font-family: var(--mono); font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--green); margin-bottom:1.5rem;
+  padding-bottom:1rem; border-bottom:1px solid var(--line);
+}
+.badge-grid { display:flex; flex-wrap:wrap; gap:0.6rem; }
+.badge {
+  font-family: var(--mono); font-size:0.7rem;
+  letter-spacing:0.1em; text-transform:uppercase;
+  padding: 6px 14px; border-radius:100px;
+  border: 1px solid var(--line2); color:var(--silver);
+  transition: all 0.2s;
+}
+.badge:hover { border-color:var(--cyan); color:var(--cyan); }
+
+/* ============================
+   TIMELINE
+============================ */
+.timeline-wrap {
+  overflow-x:auto;
+  padding-bottom: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+.timeline {
+  display:grid;
+  grid-template-columns: repeat(6,1fr);
+  gap:2px;
+  min-width: 720px;
+}
+
+.tl-col {
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding:1.5rem 1rem;
+}
+.tl-month {
+  font-family: var(--mono); font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:1rem;
+  padding-bottom:0.75rem;
+  border-bottom:1px solid var(--line);
+  display:block;
+}
+.tl-tasks { list-style:none; display:flex; flex-direction:column; gap:0.5rem; }
+.tl-tasks li {
+  font-size:0.78rem; color:var(--silver); font-weight:300;
+  padding:0.4rem 0.6rem;
+  border-left:2px solid var(--green-dim);
+  border-radius:0 4px 4px 0;
+  background:rgba(52,211,153,0.04);
+  line-height:1.4;
+}
+
+/* ============================
+   IMPACT
+============================ */
+.impact-grid {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:1.5rem;
+}
+@media(max-width:900px){ .impact-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .impact-grid { grid-template-columns:1fr; } }
+
+.impact-card {
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: clamp(1.5rem,3vw,2rem);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.impact-card:hover { border-color:var(--line2); transform:translateY(-4px); }
+
+.impact-icon-wrap {
+  width:52px; height:52px;
+  border-radius:var(--r-sm);
+  background:var(--cyan-dim);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.5rem; margin-bottom:1.25rem;
+}
+.impact-card:nth-child(2) .impact-icon-wrap { background:var(--orange-dim); }
+.impact-card:nth-child(3) .impact-icon-wrap { background:var(--green-dim); }
+.impact-card:nth-child(4) .impact-icon-wrap { background:rgba(167,139,250,0.1); }
+.impact-card:nth-child(5) .impact-icon-wrap { background:rgba(251,191,36,0.1); }
+.impact-card:nth-child(6) .impact-icon-wrap { background:rgba(52,211,153,0.1); }
+
+.impact-title {
+  font-family: var(--syne); font-weight:800;
+  font-size:1.1rem; color:var(--white);
+  margin-bottom:0.6rem; letter-spacing:-0.01em;
+}
+.impact-text { font-size:0.88rem; color:var(--silver); font-weight:300; line-height:1.7; }
+
+/* ============================
+   PRODUCTS
+============================ */
+.products-section { background:var(--deep); }
+
+.products-list {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:1.5rem;
+}
+@media(max-width:768px){ .products-list { grid-template-columns:1fr; gap:1rem; } }
+
+.product-item {
+  display:flex; align-items:center; gap:1rem;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--r-sm);
+  padding:1.25rem 1.5rem;
+  transition: border-color 0.2s;
+}
+.product-item:hover { border-color:rgba(34,211,238,0.3); }
+
+.product-idx {
+  font-family:var(--mono); font-weight:700;
+  font-size:0.8rem; color:var(--cyan);
+  flex-shrink:0;
+}
+.product-name { font-size:0.88rem; color:var(--silver); font-weight:400; line-height:1.4; }
+
+/* ============================
+   CONTACT BAND
+============================ */
+.contact-band {
+  position:relative; z-index:1;
+  background: linear-gradient(135deg, #0b1e3a 0%, #0d2040 50%, #091628 100%);
+  border-top:1px solid rgba(34,211,238,0.15);
+  padding: clamp(3rem,7vw,6rem) clamp(1.2rem,5vw,4rem);
+  text-align:center;
+  overflow:hidden;
+}
+.contact-band::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(34,211,238,0.06) 0%, transparent 70%);
+  pointer-events:none;
+}
+.contact-band-title {
+  font-family:var(--syne); font-weight:800;
+  font-size:clamp(1.6rem,4vw,2.8rem);
+  color:var(--white); margin-bottom:1rem;
+  letter-spacing:-0.02em; position:relative;
+}
+.contact-band-sub {
+  font-size:1rem; color:var(--silver); font-weight:300;
+  margin-bottom:2rem; position:relative;
+}
+.contact-pill {
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(34,211,238,0.1);
+  border:1px solid rgba(34,211,238,0.3);
+  border-radius:100px;
+  padding:12px 28px;
+  font-family:var(--mono); font-size:0.85rem;
+  color:var(--cyan); letter-spacing:0.05em;
+  position:relative; transition: background 0.2s;
+}
+.contact-pill:hover { background:rgba(34,211,238,0.18); }
+
+/* ============================
+   FOOTER
+============================ */
+footer {
+  position:relative; z-index:1;
+  background:var(--ink);
+  border-top:1px solid var(--line);
+  padding: clamp(2.5rem,5vw,4rem) clamp(1.2rem,5vw,4rem);
+}
+.footer-inner {
+  max-width:1280px; margin:0 auto;
+  display:grid; grid-template-columns:2fr 1fr 1fr;
+  gap:3rem;
+}
+@media(max-width:768px){ .footer-inner { grid-template-columns:1fr; gap:2rem; } }
+
+.footer-brand {
+  font-family:var(--syne); font-weight:800;
+  font-size:1.3rem; color:var(--white);
+  letter-spacing:-0.02em; margin-bottom:0.75rem;
+}
+.footer-brand span { color:var(--cyan); }
+.footer-about { font-size:0.88rem; color:var(--silver); font-weight:300; line-height:1.7; max-width:320px; }
+
+.footer-col-title {
+  font-family:var(--mono); font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--fog); margin-bottom:1.2rem; display:block;
+}
+.footer-links { list-style:none; display:flex; flex-direction:column; gap:0.7rem; }
+.footer-links a {
+  font-size:0.88rem; color:var(--silver); text-decoration:none;
+  font-weight:300; transition:color 0.2s;
+}
+.footer-links a:hover { color:var(--cyan); }
+
+.footer-bottom {
+  max-width:1280px; margin:2.5rem auto 0;
+  padding-top:1.5rem; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:1rem;
+}
+.footer-copy {
+  font-family:var(--mono); font-size:0.65rem;
+  letter-spacing:0.1em; color:var(--fog);
+}
+
+/* ============================
+   DIVIDER
+============================ */
+.divider { height:1px; background:var(--line); position:relative; z-index:1; }
+
+/* ============================
+   SCROLL REVEAL
+============================ */
+.reveal {
+  opacity:0;
+  transform:translateY(24px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible {
+  opacity:1;
+  transform:translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ANIMATED BG CANVAS -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="dot"></div>
+    INDUSTRIA 4.0
+  </div>
+  <ul class="nav-links">
+    <li><a href="#intro">Proyecto</a></li>
+    <li><a href="#tecnologias">Tecnologías</a></li>
+    <li><a href="#objetivos">Objetivos</a></li>
+    <li><a href="#metodologia">Metodología</a></li>
+    <li><a href="#impacto">Impacto</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Contacto</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-badge">
+    <span></span>
+    Investigación · Corp. Universitaria Iberoamericana · 2026
+  </div>
+
+  <h1 class="hero-title">
+    INDUSTRIA<br>
+    <span class="stroke">4.0</span> &amp;<br>
+    <span class="orange">LOGÍSTICA</span>
+  </h1>
+
+  <p class="hero-sub">
+    Implementación de tecnologías <strong style="color:var(--white)">RFID, GPS y Analítica de Datos</strong> para optimizar los procesos logísticos y la trazabilidad en empresas manufactureras colombianas.
+  </p>
+
+  <div class="hero-footer">
+    <div class="hero-meta-group">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Investigador</span>
+        <span class="hero-meta-val">William David Usa Centeno</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Institución</span>
+        <span class="hero-meta-val">Corp. Iberoamericana</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Semillero</span>
+        <span class="hero-meta-val">SIvFI</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Período</span>
+        <span class="hero-meta-val">2025 – 2026</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+      <span class="tag cyan">Industria 4.0</span>
+      <span class="tag orange">RFID · GPS</span>
+      <span class="tag green">Logística</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll">SCROLL <div class="hero-scroll-line"></div></div>
+</div>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-item reveal">
+    <span class="stat-num">70%</span>
+    <span class="stat-lbl">Mejora en trazabilidad con RFID</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-num">80%</span>
+    <span class="stat-lbl">Reducción de errores en inventarios</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-num">6</span>
+    <span class="stat-lbl">Bases de datos logísticas analizadas</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-num">40+</span>
+    <span class="stat-lbl">Artículos científicos 2020–2026</span>
+  </div>
+</div>
+
+<!-- SECTION: INTRO -->
+<section class="section" id="intro">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 01 — Resumen Ejecutivo</span>
+      <h2 class="section-title">La Propuesta</h2>
+    </div>
+    <div class="intro-grid">
+      <div class="reveal">
+        <p class="prose" style="margin-bottom:1.5rem">En el ámbito manufacturero de Colombia, muchas empresas aún enfrentan desafíos con la <strong>trazabilidad de materiales</strong>, el control de inventarios y la eficiencia logística. Estos inconvenientes generan costos adicionales, retrasos en las entregas y menor competitividad en la era digital.</p>
+        <p class="prose" style="margin-bottom:1.5rem">El objetivo es desarrollar una estrategia que mejore la logística mediante el uso de tecnologías como <strong>RFID, GPS y análisis de datos</strong>. Se realizará un diagnóstico de la empresa, recopilación de bases de datos, identificación de indicadores KPI y creación de un modelo de mejora integral.</p>
+        <p class="prose">La investigación busca generar impacto positivo en la eficiencia empresarial, <strong>reducir el desperdicio y optimizar la toma de decisiones</strong>. Se integrarán datos de seis bases de datos relacionadas con inventarios, transporte y producción, contribuyendo al cumplimiento de los ODS en innovación, productividad y sostenibilidad.</p>
+      </div>
+      <div class="reveal">
+        <div class="info-box">
+          <div class="info-box-title">// Tecnologías Clave</div>
+          <ul class="info-list">
+            <li>RFID — Identificación por radiofrecuencia</li>
+            <li>GPS — Seguimiento satelital en tiempo real</li>
+            <li>IoT — Internet de las Cosas industrial</li>
+            <li>Big Data — Analítica de grandes volúmenes</li>
+            <li>Machine Learning — Modelos predictivos</li>
+            <li>Business Intelligence — Dashboards de decisión</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: TECNOLOGÍAS -->
+<section class="section tech-section" id="tecnologias">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 02 — Pilares Tecnológicos</span>
+      <h2 class="section-title">Las Tres Tecnologías</h2>
+    </div>
+  </div>
+  <div class="wrap" style="padding:0 clamp(1.2rem,5vw,4rem);">
+    <div class="tech-cards reveal">
+      <div class="tech-card">
+        <div class="tech-card-accent"></div>
+        <div class="tech-card-icon">📡</div>
+        <div class="tech-card-name">RFID</div>
+        <div class="tech-card-sub">Identificación por Radiofrecuencia</div>
+        <p class="tech-card-desc">Identificación automática y sin contacto de productos y activos en la cadena de suministro. Reduce errores en inventario hasta un 80% y permite trazabilidad en tiempo real sin línea de visión directa.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-accent"></div>
+        <div class="tech-card-icon">🛰️</div>
+        <div class="tech-card-name">GPS</div>
+        <div class="tech-card-sub">Sistema de Posicionamiento Global</div>
+        <p class="tech-card-desc">Monitoreo satelital de flotas y activos en movimiento. Optimiza rutas, reduce tiempos de entrega y genera alertas en tiempo real ante desviaciones en la cadena logística.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-accent"></div>
+        <div class="tech-card-icon">📊</div>
+        <div class="tech-card-name">DATA</div>
+        <div class="tech-card-sub">Analítica de Datos Avanzada</div>
+        <p class="tech-card-desc">Procesamiento de grandes volúmenes de datos operativos para identificar patrones, predecir demanda y detectar cuellos de botella. Decisiones basadas en evidencia, no en intuición.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUESTION BAND -->
+<div class="question-band">
+  <span class="question-band-label">// Pregunta de Investigación Central</span>
+  <p class="question-band-text">
+    ¿Cómo la implementación de tecnologías de <span class="hl">Industria 4.0</span> basadas en RFID, GPS y analítica de datos puede optimizar los procesos logísticos y mejorar la <span class="hl">trazabilidad</span> en empresas manufactureras colombianas?
+  </p>
+</div>
+
+<!-- SECTION: OBJETIVOS -->
+<section class="section" id="objetivos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 03 — Metas de la Investigación</span>
+      <h2 class="section-title">Objetivos</h2>
+    </div>
+    <div class="obj-grid reveal">
+      <div class="obj-card main">
+        <div class="obj-num">00</div>
+        <span class="obj-tag">Objetivo General</span>
+        <h3 class="obj-title">Plan de Mejora Logística Integral</h3>
+        <p class="obj-desc">Crear un plan para mejorar la logística en empresas fabricantes de Colombia utilizando tecnologías como RFID, GPS y análisis de datos para aumentar la trazabilidad, eficiencia y capacidad de toma de decisiones.</p>
+      </div>
+      <div class="obj-card">
+        <div class="obj-num">01</div>
+        <span class="obj-tag">Diagnóstico</span>
+        <h3 class="obj-title">Estado Actual de Procesos</h3>
+        <p class="obj-desc">Examinar cómo funcionan los procesos logísticos y de trazabilidad en la empresa actualmente. Identificar áreas de mejora mediante análisis de datos operativos y tecnológicos.</p>
+      </div>
+      <div class="obj-card">
+        <div class="obj-num">02</div>
+        <span class="obj-tag">Diseño de Estrategias</span>
+        <h3 class="obj-title">Plan de Implementación</h3>
+        <p class="obj-desc">Desarrollar planes para implementar tecnologías como RFID, GPS y herramientas de análisis de datos que faciliten la mejora de procesos logísticos y la gestión empresarial.</p>
+      </div>
+      <div class="obj-card">
+        <div class="obj-num">03</div>
+        <span class="obj-tag">Evaluación</span>
+        <h3 class="obj-title">Medición del Impacto</h3>
+        <p class="obj-desc">Medir el impacto de las estrategias propuestas mediante indicadores de desempeño relacionados con eficiencia operativa, reducción de costos, control de inventarios y sostenibilidad.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: HIPÓTESIS -->
+<section class="section hypo-section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 04 — Hipótesis de Trabajo</span>
+      <h2 class="section-title">Planteamiento</h2>
+    </div>
+    <div class="hypo-block reveal">
+      <p class="hypo-text">La adopción de tecnologías de la Industria 4.0, junto con procesos de capacitación y ajustes organizacionales, <strong>potencia la colaboración entre los trabajadores y los sistemas inteligentes</strong>, lo que aumenta la capacidad de innovación y la adaptación al cambio en las empresas industriales.</p>
+    </div>
+    <div class="vars-grid reveal">
+      <div class="var-card ind">
+        <span class="var-label">Variable Independiente</span>
+        <div class="var-title">Adopción Tecnológica</div>
+        <ul class="var-list">
+          <li>Número de procesos automatizados</li>
+          <li>Nivel de digitalización de operaciones</li>
+          <li>Porcentaje de activos monitoreados</li>
+          <li>Datos capturados en tiempo real</li>
+          <li>Nivel de adopción tecnológica</li>
+        </ul>
+      </div>
+      <div class="var-card dep">
+        <span class="var-label">Variable Dependiente</span>
+        <div class="var-title">Eficiencia Logística</div>
+        <ul class="var-list">
+          <li>Precisión del inventario (%)</li>
+          <li>Tiempo promedio de localización</li>
+          <li>Tiempo de entrega</li>
+          <li>Reducción de costos operativos (%)</li>
+          <li>Incremento de productividad (%)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: METODOLOGÍA -->
+<section class="section method-section" id="metodologia">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 05 — Diseño de Investigación</span>
+      <h2 class="section-title">Metodología</h2>
+    </div>
+    <div class="method-grid">
+      <div class="method-steps reveal">
+        <div class="method-step">
+          <span class="step-num">01</span>
+          <div class="step-body">
+            <div class="step-title">Diagnóstico</div>
+            <div class="step-desc">Revisión de los procesos logísticos actuales e identificación de oportunidades de mejora mediante análisis documental.</div>
+          </div>
+        </div>
+        <div class="method-step">
+          <span class="step-num">02</span>
+          <div class="step-body">
+            <div class="step-title">Recopilación de datos</div>
+            <div class="step-desc">Depuración y organización de 6 bases de datos: inventarios, transporte, producción, almacenamiento, distribución y trazabilidad.</div>
+          </div>
+        </div>
+        <div class="method-step">
+          <span class="step-num">03</span>
+          <div class="step-body">
+            <div class="step-title">Análisis comparativo</div>
+            <div class="step-desc">Revisión de 30–40 artículos científicos (2020–2026) de Scopus, IEEE Xplore, Science Direct y Google Académico.</div>
+          </div>
+        </div>
+        <div class="method-step">
+          <span class="step-num">04</span>
+          <div class="step-body">
+            <div class="step-title">Diseño de estrategias</div>
+            <div class="step-desc">Formulación del modelo de mejora logística basado en RFID, GPS y analítica de datos con indicadores KPI.</div>
+          </div>
+        </div>
+        <div class="method-step">
+          <span class="step-num">05</span>
+          <div class="step-body">
+            <div class="step-title">Evaluación de impacto</div>
+            <div class="step-desc">Medición de eficiencia operativa, reducción de costos y mejora en trazabilidad mediante indicadores de desempeño.</div>
+          </div>
+        </div>
+        <div class="method-step">
+          <span class="step-num">06</span>
+          <div class="step-body">
+            <div class="step-title">Informe y socialización</div>
+            <div class="step-desc">Elaboración del informe final, artículo académico y presentación de hallazgos ante la comunidad académica y empresarial.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="method-box">
+          <div class="method-box-title">// Enfoque Metodológico</div>
+          <div class="badge-grid">
+            <span class="badge">Cualitativo</span>
+            <span class="badge">Descriptivo</span>
+            <span class="badge">Exploratorio</span>
+            <span class="badge">Revisión documental</span>
+            <span class="badge">Análisis comparativo</span>
+            <span class="badge">Análisis de contenido</span>
+            <span class="badge">Matrices bibliográficas</span>
+            <span class="badge">KPI logísticos</span>
+            <span class="badge">Excel + cuadros</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CRONOGRAMA -->
+<section class="section" id="cronograma">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 06 — Planificación</span>
+      <h2 class="section-title">Cronograma 6 Meses</h2>
+    </div>
+    <div class="timeline-wrap reveal">
+      <div class="timeline">
+        <div class="tl-col">
+          <span class="tl-month">MES 01</span>
+          <ul class="tl-tasks">
+            <li>Formulación del problema</li>
+            <li>Objetivos y justificación</li>
+            <li>Antecedentes nacionales</li>
+            <li>Marco teórico</li>
+          </ul>
+        </div>
+        <div class="tl-col">
+          <span class="tl-month">MES 02</span>
+          <ul class="tl-tasks">
+            <li>Selección de artículos</li>
+            <li>Recopilación de bases de datos</li>
+            <li>Marco teórico (cont.)</li>
+          </ul>
+        </div>
+        <div class="tl-col">
+          <span class="tl-month">MES 03</span>
+          <ul class="tl-tasks">
+            <li>Organización de datos</li>
+            <li>Análisis documental</li>
+            <li>Análisis comparativo</li>
+            <li>Socialización Trabajo I</li>
+          </ul>
+        </div>
+        <div class="tl-col">
+          <span class="tl-month">MES 04</span>
+          <ul class="tl-tasks">
+            <li>Diseño de estrategias I4.0</li>
+            <li>Análisis comparativo (cont.)</li>
+          </ul>
+        </div>
+        <div class="tl-col">
+          <span class="tl-month">MES 05</span>
+          <ul class="tl-tasks">
+            <li>Evaluación de indicadores</li>
+            <li>Conclusiones</li>
+            <li>Artículo académico</li>
+            <li>Informe parcial</li>
+          </ul>
+        </div>
+        <div class="tl-col">
+          <span class="tl-month">MES 06</span>
+          <ul class="tl-tasks">
+            <li>Informe final</li>
+            <li>RAE — Trabajo II</li>
+            <li>Recomendaciones</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;font-family:var(--mono);font-size:0.68rem;color:var(--fog);margin-top:1rem;letter-spacing:0.1em;">← Desliza para ver el cronograma completo en móvil →</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: IMPACTO -->
+<section class="section" id="impacto">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 07 — Resultados Esperados</span>
+      <h2 class="section-title">Impacto del Proyecto</h2>
+    </div>
+    <div class="impact-grid reveal">
+      <div class="impact-card">
+        <div class="impact-icon-wrap">🎓</div>
+        <div class="impact-title">Académico</div>
+        <p class="impact-text">Fortalecimiento del programa de Ingeniería Industrial y el Semillero SIvFI. Conocimiento actualizado sobre transformación digital, automatización y trazabilidad para futuros proyectos.</p>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon-wrap">🏭</div>
+        <div class="impact-title">Empresarial</div>
+        <p class="impact-text">Las estrategias ayudarán a mejorar el control de inventarios, trazabilidad de productos y gestión del transporte, reduciendo errores operativos y costos logísticos.</p>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon-wrap">⚙️</div>
+        <div class="impact-title">Tecnológico</div>
+        <p class="impact-text">Impulso al uso de IoT, automatización y monitoreo en tiempo real. Se demostrará cómo estas tecnologías mejoran la eficiencia operativa y la capacidad de respuesta.</p>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon-wrap">🌱</div>
+        <div class="impact-title">Ambiental</div>
+        <p class="impact-text">Optimización de rutas y reducción de desperdicios. Alineado con los ODS en industria sostenible, producción responsable y crecimiento económico inclusivo.</p>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon-wrap">👥</div>
+        <div class="impact-title">Social</div>
+        <p class="impact-text">Entornos laborales más eficientes e innovadores. Promueve nuevas habilidades para que los trabajadores se adapten a los cambios tecnológicos de la industria moderna.</p>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon-wrap">🔬</div>
+        <div class="impact-title">Investigativo</div>
+        <p class="impact-text">Base documental especializada y artículo científico listo para publicación. Referencia para nuevos proyectos académicos en logística inteligente y cadenas de suministro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section products-section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">// 08 — Entregables</span>
+      <h2 class="section-title">Productos Esperados</h2>
+    </div>
+    <div class="products-list reveal">
+      <div class="product-item"><span class="product-idx">01</span><span class="product-name">Informe de investigación final con análisis y hallazgos</span></div>
+      <div class="product-item"><span class="product-idx">02</span><span class="product-name">Artículo científico listo para publicación institucional</span></div>
+      <div class="product-item"><span class="product-idx">03</span><span class="product-name">Estado del arte de aplicaciones I4.0 en logística</span></div>
+      <div class="product-item"><span class="product-idx">04</span><span class="product-name">Matriz comparativa de tecnologías RFID, GPS y Analytics</span></div>
+      <div class="product-item"><span class="product-idx">05</span><span class="product-name">Evaluación de desafíos y oportunidades logísticas</span></div>
+      <div class="product-item"><span class="product-idx">06</span><span class="product-name">Modelo de optimización logística con Industria 4.0</span></div>
+      <div class="product-item"><span class="product-idx">07</span><span class="product-name">Base documental organizada: artículos y casos de estudio</span></div>
+      <div class="product-item"><span class="product-idx">08</span><span class="product-name">Presentación ante comunidad académica y empresarial</span></div>
+      <div class="product-item"><span class="product-idx">09</span><span class="product-name">Recomendaciones para investigaciones futuras</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT BAND -->
+<div class="contact-band" id="contacto">
+  <h2 class="contact-band-title">¿Tienes preguntas sobre el proyecto?</h2>
+  <p class="contact-band-sub">Investigador principal disponible para consultas académicas y empresariales.</p>
+  <div class="contact-pill">
+    ✉ wusacent@estudiante.ibero.edu.co
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">INDUSTRIA <span>4.0</span></div>
+      <p class="footer-about">Proyecto de investigación del programa de Ingeniería Industrial · Corporación Universitaria Iberoamericana · Semillero SIvFI. Bogotá, Colombia.</p>
+    </div>
+    <div>
+      <span class="footer-col-title">// Navegación</span>
+      <ul class="footer-links">
+        <li><a href="#intro">Resumen del Proyecto</a></li>
+        <li><a href="#tecnologias">Tecnologías</a></li>
+        <li><a href="#objetivos">Objetivos</a></li>
+        <li><a href="#metodologia">Metodología</a></li>
+        <li><a href="#impacto">Impacto Esperado</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer-col-title">// Programa</span>
+      <ul class="footer-links">
+        <li><a href="#">Ingeniería Industrial</a></li>
+        <li><a href="#">Semillero SIvFI</a></li>
+        <li><a href="#">Corp. Iberoamericana</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 · INDUSTRIA 4.0 RESEARCH · CORP. UNIVERSITARIA IBEROAMERICANA</span>
+    <span class="footer-copy">RFID · GPS · ANALYTICS · IoT</span>
+  </div>
+</footer>
+
+<!-- ============================
+     JS: CANVAS + SCROLL REVEAL
+============================ -->
+<script>
+/* ── ANIMATED PARTICLE CANVAS ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [], lines = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function Particle() {
+  this.x = Math.random() * W;
+  this.y = Math.random() * H;
+  this.vx = (Math.random() - 0.5) * 0.4;
+  this.vy = (Math.random() - 0.5) * 0.4;
+  this.r = Math.random() * 1.5 + 0.5;
+  this.alpha = Math.random() * 0.5 + 0.2;
+}
+
+Particle.prototype.update = function() {
+  this.x += this.vx;
+  this.y += this.vy;
+  if (this.x < 0) this.x = W;
+  if (this.x > W) this.x = 0;
+  if (this.y < 0) this.y = H;
+  if (this.y > H) this.y = 0;
+};
+
+function initParticles() {
+  const count = Math.floor((W * H) / 18000);
+  particles = [];
+  for (let i = 0; i < count; i++) particles.push(new Particle());
+}
+
+let scanY = 0;
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  /* particles */
+  particles.forEach(p => {
+    p.update();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(34,211,238,${p.alpha})`;
+    ctx.fill();
+  });
+
+  /* connection lines */
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(34,211,238,${0.12 * (1 - dist / 120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+
+  /* scan line */
+  scanY = (scanY + 0.5) % H;
+  const grad = ctx.createLinearGradient(0, scanY - 40, 0, scanY + 40);
+  grad.addColorStop(0, 'rgba(34,211,238,0)');
+  grad.addColorStop(0.5, 'rgba(34,211,238,0.04)');
+  grad.addColorStop(1, 'rgba(34,211,238,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, scanY - 40, W, 80);
+
+  requestAnimationFrame(draw);
+}
+
+resize();
+initParticles();
+draw();
+window.addEventListener('resize', () => { resize(); initParticles(); });
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
